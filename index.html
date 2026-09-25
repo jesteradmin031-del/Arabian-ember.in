@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#181512" />
+  <title>Arabian Ember — Street food, made unforgettable</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #181512;
+      --ink-2: #23201b;
+      --clay: #a64b2a;
+      --ember: #e6632a;
+      --saffron: #efb83c;
+      --cream: #f6f0e6;
+      --sand: #dfd1be;
+      --muted: #a89e92;
+      --line: rgba(246, 240, 230, .16);
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "DM Sans", Arial, sans-serif;
+      --mono: "DM Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--cream);
+      background: var(--ink);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+    body.menu-open, body.cart-open { overflow: hidden; }
+    button, a { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+    .eyebrow {
+      display: flex; align-items: center; gap: 9px; margin: 0 0 14px;
+      color: var(--saffron); font: 500 11px/1 var(--mono); letter-spacing: .13em; text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 23px; height: 1px; background: currentColor; }
+    .section-title { margin: 0; max-width: 600px; font: 700 clamp(36px, 5vw, 64px)/.98 var(--serif); letter-spacing: -.045em; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      min-height: 49px; padding: 0 20px; border: 1px solid transparent; border-radius: 999px;
+      transition: transform .2s ease, background .2s ease, border .2s ease;
+      font-size: 14px; font-weight: 700;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: var(--ink); background: var(--saffron); }
+    .button-primary:hover { background: #ffd36a; }
+    .button-quiet { color: var(--cream); border-color: var(--line); background: rgba(255,255,255,.02); }
+    .button-quiet:hover { border-color: rgba(246, 240, 230, .52); background: rgba(255,255,255,.06); }
+    .icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+
+    .notice {
+      position: relative; z-index: 20; height: 35px; display: flex; align-items: center; justify-content: center;
+      padding: 0 18px; color: #261d0f; background: var(--saffron); font: 500 11px/1 var(--mono); letter-spacing: .075em; text-transform: uppercase; text-align: center;
+    }
+    .nav {
+      position: absolute; inset: 35px 0 auto; z-index: 20; padding: 24px 0;
+      border-bottom: 1px solid rgba(246,240,230,.14);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; font: 700 19px/.9 var(--serif); letter-spacing: -.035em; }
+    .brand-mark { position: relative; width: 23px; height: 29px; border: 1.5px solid var(--saffron); border-radius: 52% 48% 52% 48%; transform: rotate(45deg); }
+    .brand-mark::before { content:""; position:absolute; left:6px; top:6px; width:8px; height:13px; background:var(--saffron); border-radius: 80% 10% 80% 30%; transform: rotate(-27deg); }
+    .brand-word { display: block; }
+    .brand-word small { display:block; margin-top: 3px; color: var(--saffron); font: 500 7px/1 var(--mono); letter-spacing: .18em; }
+    .nav-links { display: flex; align-items: center; gap: 29px; margin-left: auto; }
+    .nav-links a { color: var(--sand); font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; transition: color .2s; }
+    .nav-links a:hover { color: var(--saffron); }
+    .cart-button { min-height: 40px; padding: 0 14px; color: var(--cream); border: 1px solid rgba(246,240,230,.35); background: rgba(24,21,18,.3); border-radius: 999px; font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .cart-count { display: grid; place-items: center; width: 19px; height: 19px; color: var(--ink); background: var(--saffron); border-radius: 50%; font-size: 10px; }
+    .menu-button { display: none; width: 43px; height: 40px; color: var(--cream); border: 1px solid rgba(246,240,230,.35); border-radius: 50%; background: none; }
+
+    .hero { position: relative; min-height: 730px; padding: 195px 0 75px; background: #191613; isolation: isolate; overflow: hidden; }
+    .hero::before { content:""; position:absolute; z-index:-1; inset:0; background: radial-gradient(circle at 76% 50%, rgba(222, 102, 42, .38), transparent 25%), radial-gradient(circle at 12% 92%, rgba(239,184,60,.12), transparent 27%), linear-gradient(110deg, #171411 0%, #1b1713 51%, #2d2118 100%); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(375px, .97fr); align-items: center; gap: clamp(36px, 7vw, 104px); }
+    .hero-copy { padding: 22px 0; }
+    .kicker { display: flex; align-items: center; gap: 9px; margin-bottom: 25px; color: var(--saffron); font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    .kicker .spark { font-size: 15px; }
+    h1 { margin:0; max-width: 625px; font: 700 clamp(58px, 6.6vw, 91px)/.88 var(--serif); letter-spacing: -.065em; }
+    h1 em { color: var(--saffron); font-style: italic; }
+    .hero-description { max-width: 450px; margin: 27px 0 31px; color: var(--sand); font-size: 17px; line-height: 1.55; }
+    .hero-actions { display:flex; flex-wrap: wrap; align-items:center; gap: 11px; }
+    .review-chip { display:flex; align-items:center; gap:10px; margin-top: 52px; color: var(--sand); font-size: 12px; }
+    .review-stack { display:flex; padding-left: 5px; }
+    .avatar { width: 27px; height: 27px; margin-left:-5px; border: 2px solid var(--ink); border-radius:50%; background-size: cover; background-position:center; }
+    .avatar:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=70'); }
+    .avatar:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=70'); }
+    .avatar:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=70'); }
+    .rating { color: var(--cream); font-weight:700; }
+    .hero-visual { position: relative; height: 470px; }
+    .hero-image { position:absolute; inset: 0 28px 0 0; overflow:hidden; border-radius: 220px 220px 22px 22px; background: #73442d url('https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=88') center/cover; box-shadow: 23px 29px 0 rgba(239,184,60,.9); }
+    .hero-image::after { content:""; position:absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,18,.06), rgba(24,21,18,.42)); mix-blend-mode: multiply; }
+    .visual-label { position: absolute; z-index: 2; right: -8px; top: 43px; display:flex; align-items:center; justify-content:center; width:118px; height:118px; color: var(--ink); background: var(--saffron); border-radius:50%; text-align:center; font: 700 12px/1.18 var(--mono); letter-spacing:.03em; text-transform:uppercase; transform: rotate(11deg); }
+    .visual-label::before { content:""; position:absolute; inset:6px; border:1px dashed rgba(24,21,18,.55); border-radius:50%; }
+    .floating-card { position:absolute; z-index:3; bottom: -25px; left:-33px; display:flex; align-items:center; gap:12px; width: 230px; padding: 13px; background:#f7f0e6; color:var(--ink); box-shadow: 0 18px 36px rgba(0,0,0,.23); }
+    .floating-card img { width:48px; height:48px; border-radius:50%; object-fit:cover; }
+    .floating-card .small { margin-bottom:4px; color:#765e4b; font:500 9px/1 var(--mono); letter-spacing:.09em; text-transform:uppercase; }
+    .floating-card strong { display:block; font:700 15px/1.05 var(--serif); }
+    .hero-scroll { position:absolute; bottom:24px; left:50%; display:flex; align-items:center; gap:8px; color:var(--muted); font:500 10px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; transform:translateX(-50%) rotate(-90deg); transform-origin:left; }
+    .hero-scroll::after { content:""; width:35px; height:1px; background:var(--muted); }
+
+    .trust { border-bottom: 1px solid var(--line); background: var(--ink-2); }
+    .trust-grid { display:grid; grid-template-columns: repeat(4, 1fr); }
+    .trust-item { min-height:109px; display:flex; align-items:center; gap:14px; padding: 20px clamp(16px, 2.5vw, 34px); border-right:1px solid var(--line); }
+    .trust-item:first-child { border-left:1px solid var(--line); }
+    .trust-icon { display:grid; place-items:center; flex:0 0 34px; width:34px; height:34px; color:var(--saffron); border:1px solid rgba(239,184,60,.45); border-radius:50%; font-size:17px; }
+    .trust-item strong { display:block; margin-bottom:4px; font-size:13px; }
+    .trust-item span { display:block; color:var(--muted); font-size:11px; line-height:1.3; }
+
+    .menu-section { padding: 128px 0 130px; background: var(--cream); color: var(--ink); }
+    .section-intro { display:flex; justify-content:space-between; gap:42px; align-items:end; margin-bottom:46px; }
+    .menu-section .eyebrow { color: var(--clay); }
+    .section-intro p { max-width:330px; margin:0 0 4px; color:#6e6258; font-size:15px; line-height:1.55; }
+    .filters { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:26px; }
+    .filter { min-height:38px; padding:0 15px; color:#72675d; border:1px solid #dacdbc; border-radius:999px; background:transparent; font:500 11px/1 var(--mono); letter-spacing:.07em; text-transform:uppercase; transition:.2s; }
+    .filter.active, .filter:hover { color:var(--cream); background:var(--ink); border-color:var(--ink); }
+    .food-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:17px; }
+    .food-card { position:relative; overflow:hidden; background:#fffaf3; border:1px solid #e4d9ca; border-radius: 4px; }
+    .food-card.hidden { display:none; }
+    .food-image { position:relative; height:244px; overflow:hidden; background:#d7b399; }
+    .food-image img { width:100%; height:100%; object-fit:cover; transition:transform .45s ease; }
+    .food-card:hover .food-image img { transform:scale(1.06); }
+    .food-tag { position:absolute; top:12px; left:12px; padding:7px 9px; color:var(--ink); background:var(--cream); border-radius:999px; font:500 9px/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .veg-dot { position:absolute; right:13px; top:13px; width:15px; height:15px; padding:3px; border:1px solid #498547; background:var(--cream); }
+    .veg-dot::after { content:""; display:block; width:100%; height:100%; border-radius:50%; background:#498547; }
+    .food-content { padding:17px 16px 16px; }
+    .food-card h3 { margin:0 0 6px; font:700 21px/1 var(--serif); letter-spacing:-.035em; }
+    .food-card p { min-height:35px; margin:0; color:#776b61; font-size:12px; line-height:1.45; }
+    .food-bottom { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:17px; padding-top:14px; border-top:1px solid #e5dbcf; }
+    .price { font:700 15px/1 var(--mono); }
+    .add-button { display:flex; align-items:center; justify-content:center; width:30px; height:30px; color:var(--cream); border:0; border-radius:50%; background:var(--ink); font-size:21px; font-weight:300; line-height:1; transition:.2s; }
+    .add-button:hover { background:var(--ember); transform:rotate(90deg); }
+    .menu-bottom { display:flex; justify-content:center; margin-top:38px; }
+    .menu-bottom .button-quiet { color:var(--ink); border-color:#ab9e91; }
+    .menu-bottom .button-quiet:hover { color:var(--cream); background:var(--ink); }
+
+    .story { padding: 130px 0; background: #261b15; }
+    .story-grid { display:grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(44px, 8vw, 130px); align-items:center; }
+    .story-gallery { position:relative; height:520px; }
+    .story-main { position:absolute; left:0; top:0; width:70%; height:86%; overflow:hidden; border-radius: 150px 150px 10px 10px; }
+    .story-main img, .story-side img { width:100%; height:100%; object-fit:cover; }
+    .story-side { position:absolute; right:0; bottom:0; width:48%; height:53%; overflow:hidden; border: 9px solid #261b15; border-radius: 0 0 92px 0; }
+    .stamp { position:absolute; z-index:2; top: 40%; left: 57%; display:grid; place-items:center; width:116px; height:116px; color:var(--ink); background:var(--saffron); border-radius:50%; transform:rotate(-12deg); }
+    .stamp span { max-width:76px; text-align:center; font:700 12px/1.2 var(--mono); letter-spacing:.03em; text-transform:uppercase; }
+    .story-copy .eyebrow { color:var(--saffron); }
+    .story-copy .section-title { max-width:520px; }
+    .story-copy > p:not(.eyebrow) { max-width:505px; margin:25px 0 29px; color:var(--sand); font-size:16px; line-height:1.65; }
+    .story-points { display:grid; grid-template-columns: 1fr 1fr; max-width:480px; margin:0 0 33px; border-top:1px solid var(--line); }
+    .story-point { padding:19px 10px 0 0; }
+    .story-point + .story-point { padding-left:20px; border-left:1px solid var(--line); }
+    .story-point strong { display:block; color:var(--saffron); margin-bottom:4px; font:700 25px/1 var(--serif); }
+    .story-point span { color:var(--muted); font-size:12px; }
+
+    .location { position:relative; padding:126px 0 130px; overflow:hidden; background:var(--cream); color:var(--ink); }
+    .location::after { content:"EMBER"; position:absolute; right:-17px; bottom:-58px; color:rgba(24,21,18,.045); font:700 clamp(110px, 18vw, 270px)/1 var(--serif); letter-spacing:-.08em; pointer-events:none; }
+    .location-grid { position:relative; z-index:1; display:grid; grid-template-columns: .83fr 1.17fr; gap: clamp(43px, 9vw, 135px); align-items:center; }
+    .location .eyebrow { color:var(--clay); }
+    .location-copy > p:not(.eyebrow) { margin:22px 0 27px; max-width:360px; color:#6b6057; font-size:15px; line-height:1.55; }
+    .details { margin:0 0 29px; padding:0; list-style:none; border-top:1px solid #d9cdbf; }
+    .details li { display:grid; grid-template-columns:102px 1fr; gap:14px; padding:15px 0; border-bottom:1px solid #d9cdbf; }
+    .details span { color:#8a7b6c; font:500 10px/1.45 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .details strong { font-size:13px; line-height:1.45; }
+    .location-card { min-height:420px; position:relative; display:flex; align-items:flex-end; overflow:hidden; padding:29px; background:#57402e url('https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=85') center/cover; }
+    .location-card::before { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(24,21,18,.06) 27%, rgba(24,21,18,.75)); }
+    .location-badge { position:relative; width:100%; padding:18px; color:var(--cream); border:1px solid rgba(246,240,230,.28); background:rgba(24,21,18,.5); backdrop-filter:blur(7px); }
+    .location-badge .small { margin-bottom:5px; color:var(--saffron); font:500 10px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; }
+    .location-badge strong { font:700 24px/1 var(--serif); }
+    .location-badge a { display:inline-flex; gap:6px; align-items:center; margin-top:8px; color:var(--sand); font:500 11px/1 var(--mono); letter-spacing:.05em; }
+
+    footer { padding: 70px 0 23px; background:#11100e; }
+    .footer-main { display:grid; grid-template-columns:1.4fr .85fr .85fr; gap:40px; padding-bottom:56px; }
+    .footer-copy { max-width:330px; margin:20px 0 20px; color:var(--muted); font-size:14px; line-height:1.5; }
+    .socials { display:flex; gap:8px; }
+    .socials a { display:grid; place-items:center; width:33px; height:33px; color:var(--sand); border:1px solid var(--line); border-radius:50%; font:500 11px/1 var(--mono); transition:.2s; }
+    .socials a:hover { color:var(--ink); background:var(--saffron); border-color:var(--saffron); }
+    .footer-heading { margin:5px 0 17px; color:var(--saffron); font:500 10px/1 var(--mono); letter-spacing:.11em; text-transform:uppercase; }
+    .footer-links { display:grid; gap:11px; }
+    .footer-links a { color:var(--muted); font-size:13px; transition:.2s; }
+    .footer-links a:hover { color:var(--cream); }
+    .footer-bar { display:flex; justify-content:space-between; gap:20px; padding-top:20px; border-top:1px solid var(--line); color:#71695f; font:500 10px/1.45 var(--mono); letter-spacing:.04em; }
+
+    .overlay { position:fixed; z-index:40; inset:0; visibility:hidden; opacity:0; background:rgba(0,0,0,.52); transition:.25s; }
+    .cart { position:fixed; z-index:41; top:0; right:0; bottom:0; width:min(410px, 100%); display:flex; flex-direction:column; padding:26px; color:var(--ink); background:var(--cream); transform:translateX(100%); transition:transform .35s cubic-bezier(.22,.61,.36,1); }
+    body.cart-open .overlay { visibility:visible; opacity:1; }
+    body.cart-open .cart { transform:translateX(0); }
+    .drawer-top { display:flex; align-items:center; justify-content:space-between; padding-bottom:20px; border-bottom:1px solid #d9cdbf; }
+    .drawer-top h2 { margin:0; font:700 29px/1 var(--serif); letter-spacing:-.035em; }
+    .close { display:grid; place-items:center; width:36px; height:36px; color:var(--ink); border:1px solid #cfc1b1; border-radius:50%; background:transparent; font-size:21px; }
+    .cart-items { flex:1; overflow:auto; padding:15px 0; }
+    .empty { display:grid; place-items:center; min-height:220px; color:#7c7065; text-align:center; font-size:14px; }
+    .empty .empty-icon { display:block; margin-bottom:12px; font-size:27px; }
+    .cart-line { display:grid; grid-template-columns:1fr auto; gap:9px; padding:15px 0; border-bottom:1px solid #e0d5c8; }
+    .cart-line strong { display:block; margin-bottom:4px; font:700 17px/1.05 var(--serif); }
+    .cart-line .line-price { color:#6c6055; font:500 11px/1 var(--mono); }
+    .line-actions { display:flex; align-items:center; gap:7px; margin-top:10px; }
+    .quantity { display:flex; align-items:center; gap:10px; padding:4px; border:1px solid #d7cabc; border-radius:20px; }
+    .quantity button { display:grid; place-items:center; width:22px; height:22px; padding:0; border:0; border-radius:50%; background:#eee3d6; color:var(--ink); font-size:16px; }
+    .quantity span { min-width:9px; text-align:center; font:500 11px/1 var(--mono); }
+    .remove { padding:0; color:#9c4d31; border:0; background:none; font:500 10px/1 var(--mono); letter-spacing:.05em; text-transform:uppercase; }
+    .cart-total { padding:20px 0; border-top:1px solid #d9cdbf; }
+    .cart-total div { display:flex; justify-content:space-between; margin-bottom:15px; font:500 11px/1 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .cart-total strong { font-size:16px; }
+    .cart-total .button { width:100%; border:0; }
+    .cart-total .button:disabled { cursor:not-allowed; opacity:.45; transform:none; }
+    .toast { position:fixed; z-index:60; left:50%; bottom:24px; padding:13px 18px; color:var(--cream); background:#2d281f; border:1px solid rgba(239,184,60,.36); border-radius:999px; box-shadow:0 8px 28px rgba(0,0,0,.25); font-size:13px; transform:translate(-50%, 90px); opacity:0; transition:.28s; }
+    .toast.show { transform:translate(-50%, 0); opacity:1; }
+
+    @media (max-width: 880px) {
+      .nav-links { display:none; }
+      .nav-links.mobile-visible { position:absolute; top:72px; left:24px; right:24px; display:flex; flex-direction:column; align-items:stretch; gap:0; padding:10px 18px; border:1px solid rgba(246,240,230,.2); background:#211c17; box-shadow:0 16px 32px rgba(0,0,0,.22); }
+      .nav-links.mobile-visible a { padding:14px 0; border-bottom:1px solid rgba(246,240,230,.1); }
+      .nav-links.mobile-visible a:last-child { border-bottom:0; }
+      .menu-button { display:grid; place-items:center; }
+      .hero { min-height:auto; padding-top:169px; }
+      .hero-grid { grid-template-columns:1fr; gap:38px; }
+      .hero-copy { padding:0; }
+      .hero-description { max-width:540px; }
+      .hero-visual { width:min(550px, calc(100% - 22px)); height:420px; margin-left:auto; }
+      .trust-grid { grid-template-columns:1fr 1fr; }
+      .trust-item:nth-child(3) { border-left:1px solid var(--line); }
+      .food-grid { grid-template-columns:repeat(2, 1fr); }
+      .story-grid, .location-grid { grid-template-columns:1fr; }
+      .story-grid { gap:54px; }
+      .story-gallery { width:min(590px, 100%); }
+      .location-grid { gap:48px; }
+      .location-copy { max-width:550px; }
+      .location-copy > p:not(.eyebrow) { max-width:510px; }
+      .location-card { min-height:390px; }
+    }
+    @media (max-width: 570px) {
+      .shell { width:min(100% - 32px, 1180px); }
+      .notice { height:31px; font-size:9px; letter-spacing:.035em; }
+      .nav { inset:31px 0 auto; padding:17px 0; }
+      .nav-links.mobile-visible { top:64px; left:16px; right:16px; }
+      .brand { font-size:16px; }
+      .brand-mark { width:19px; height:24px; }
+      .brand-mark::before { left:5px; top:5px; width:6px; height:10px; }
+      .cart-button { min-height:37px; padding:0 10px; font-size:10px; }
+      .menu-button { width:37px; height:37px; }
+      .hero { padding:139px 0 63px; }
+      h1 { font-size:clamp(52px, 16.6vw, 75px); }
+      .hero-description { margin:21px 0 25px; font-size:15px; }
+      .hero-actions .button { min-height:46px; padding:0 17px; }
+      .review-chip { margin-top:35px; }
+      .hero-visual { height:340px; margin-top:2px; }
+      .hero-image { inset:0 14px 0 0; border-radius:160px 160px 15px 15px; box-shadow:14px 17px 0 var(--saffron); }
+      .visual-label { right:-8px; top:27px; width:88px; height:88px; font-size:9px; }
+      .floating-card { bottom:-19px; left:-7px; width:198px; padding:10px; }
+      .floating-card img { width:42px; height:42px; }
+      .floating-card strong { font-size:13px; }
+      .hero-scroll { display:none; }
+      .trust-grid { grid-template-columns:1fr 1fr; }
+      .trust-item { min-height:92px; gap:9px; padding:14px 10px; }
+      .trust-icon { flex-basis:30px; width:30px; height:30px; font-size:14px; }
+      .trust-item strong { font-size:11px; }
+      .trust-item span { font-size:9px; }
+      .menu-section, .story, .location { padding:83px 0; }
+      .section-intro { display:block; margin-bottom:29px; }
+      .section-intro p { margin-top:16px; font-size:14px; }
+      .section-title { font-size:clamp(35px, 10vw, 48px); }
+      .filters { gap:6px; margin-bottom:17px; }
+      .filter { min-height:34px; padding:0 11px; font-size:9px; }
+      .food-grid { gap:11px; }
+      .food-image { height:154px; }
+      .food-tag { top:8px; left:8px; padding:5px 7px; font-size:7px; }
+      .veg-dot { right:8px; top:8px; width:13px; height:13px; padding:2px; }
+      .food-content { padding:12px; }
+      .food-card h3 { font-size:17px; }
+      .food-card p { min-height:51px; font-size:10px; }
+      .food-bottom { margin-top:11px; padding-top:10px; }
+      .price { font-size:12px; }
+      .add-button { width:27px; height:27px; }
+      .story-gallery { height:405px; }
+      .stamp { width:86px; height:86px; left:56%; }
+      .stamp span { max-width:58px; font-size:9px; }
+      .story-copy > p:not(.eyebrow) { margin:19px 0 23px; font-size:14px; }
+      .story-points { margin-bottom:26px; }
+      .story-point strong { font-size:22px; }
+      .story-point span { font-size:10px; }
+      .details li { grid-template-columns:84px 1fr; padding:13px 0; }
+      .details strong { font-size:12px; }
+      .location-card { min-height:320px; padding:16px; }
+      .location-badge { padding:14px; }
+      .location-badge strong { font-size:20px; }
+      .footer-main { grid-template-columns:1fr 1fr; gap:32px 24px; padding-bottom:40px; }
+      .footer-brand { grid-column:1/-1; }
+      .footer-copy { margin:16px 0; font-size:13px; }
+      .footer-bar { flex-direction:column; gap:7px; }
+      .cart { padding:21px 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="notice">Fresh off the grill · Open today from 11:30 AM to 11:00 PM</div>
+
+  <header class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="#top" aria-label="Arabian Ember home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-word">Arabian Ember<small>Street food, made unforgettable</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#menu">Menu</a>
+        <a href="#story">Our story</a>
+        <a href="#visit">Visit us</a>
+      </nav>
+      <button class="cart-button" type="button" data-open-cart aria-label="View your order">
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 8H6.2"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+        Order <span class="cart-count" data-cart-count>0</span>
+      </button>
+      <button class="menu-button" type="button" data-open-menu aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="kicker"><span class="spark">✦</span> Arabian street food · reimagined</p>
+          <h1>From the <em>fire,</em><br />with flavour.</h1>
+          <p class="hero-description">Smoky shawarmas, fragrant rice and dishes made for gathering—served with the generous spirit of an Arabian kitchen.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#menu">Explore the menu <span aria-hidden="true">→</span></a>
+            <a class="button button-quiet" href="#visit">Find your table</a>
+          </div>
+          <div class="review-chip" aria-label="Rated 4.9 by more than 1200 guests">
+            <div class="review-stack" aria-hidden="true"><span class="avatar"></span><span class="avatar"></span><span class="avatar"></span></div>
+            <span><span class="rating">4.9/5</span> loved by 1,200+ guests</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Freshly prepared Arabian food">
+          <div class="hero-image"></div>
+          <div class="visual-label">Grilled<br />every day</div>
+          <div class="floating-card">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=160&q=80" alt="A plated Arabian dish" />
+            <div><div class="small">Guest favourite</div><strong>Charcoal Chicken</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll">Scroll to savour</div>
+    </section>
+
+    <section class="trust" aria-label="Our promises">
+      <div class="shell trust-grid">
+        <div class="trust-item"><span class="trust-icon">✦</span><div><strong>Prepared fresh</strong><span>Cooked to order, every time.</span></div></div>
+        <div class="trust-item"><span class="trust-icon">♨</span><div><strong>Charcoal grilled</strong><span>That smoky ember finish.</span></div></div>
+        <div class="trust-item"><span class="trust-icon">◌</span><div><strong>Made for sharing</strong><span>Generous plates, good company.</span></div></div>
+        <div class="trust-item"><span class="trust-icon">♥</span><div><strong>100% halal</strong><span>Crafted with care and respect.</span></div></div>
+      </div>
+    </section>
+
+    <section class="menu-section" id="menu">
+      <div class="shell">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">A little something for everyone</p>
+            <h2 class="section-title">Pick your craving.</h2>
+          </div>
+          <p>Start with the dishes regulars come back for. Everything on the menu is prepared fresh, with spice you can taste.</p>
+        </div>
+        <div class="filters" role="tablist" aria-label="Menu categories">
+          <button class="filter active" type="button" data-filter="all">All favourites</button>
+          <button class="filter" type="button" data-filter="grills">From the grill</button>
+          <button class="filter" type="button" data-filter="rice">Rice & platters</button>
+          <button class="filter" type="button" data-filter="sides">Sides</button>
+        </div>
+        <div class="food-grid">
+          <article class="food-card" data-category="grills">
+            <div class="food-image"><img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=720&q=85" alt="Fresh chicken shawarma wrap" /><span class="food-tag">Best seller</span></div>
+            <div class="food-content"><h3>Chicken Shawarma</h3><p>Slow-roasted chicken, tahini, pickles and house garlic sauce.</p><div class="food-bottom"><span class="price">₹149</span><button class="add-button" data-item="Chicken Shawarma" data-price="149" aria-label="Add Chicken Shawarma">+</button></div></div>
+          </article>
+          <article class="food-card" data-category="rice">
+            <div class="food-image"><img src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=720&q=85" alt="A fragrant Arabian rice platter" /><span class="food-tag">Signature</span></div>
+            <div class="food-content"><h3>Smoky Mandi</h3><p>Fragrant rice, slow-cooked chicken and a bright tomato chutney.</p><div class="food-bottom"><span class="price">₹369</span><button class="add-button" data-item="Smoky Mandi" data-price="369" aria-label="Add Smoky Mandi">+</button></div></div>
+          </article>
+          <article class="food-card" data-category="grills">
+            <div class="food-image"><img src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=720&q=85" alt="Charcoal grilled chicken" /><span class="food-tag">From the ember</span></div>
+            <div class="food-content"><h3>Charcoal Chicken</h3><p>Half chicken, ember-spiced and grilled until perfectly smoky.</p><div class="food-bottom"><span class="price">₹289</span><button class="add-button" data-item="Charcoal Chicken" data-price="289" aria-label="Add Charcoal Chicken">+</button></div></div>
+          </article>
+          <article class="food-card" data-category="sides">
+            <div class="food-image"><img src="https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=720&q=85" alt="Fresh hummus with warm bread" /><span class="food-tag">To share</span><span class="veg-dot" aria-label="Vegetarian"></span></div>
+            <div class="food-content"><h3>Hummus & Kuboos</h3><p>Silky chickpea hummus, olive oil and warm, soft kuboos.</p><div class="food-bottom"><span class="price">₹129</span><button class="add-button" data-item="Hummus & Kuboos" data-price="129" aria-label="Add Hummus and Kuboos">+</button></div></div>
+          </article>
+        </div>
+        <div class="menu-bottom"><a class="button button-quiet" href="#menu">See the full menu <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+
+    <section class="story" id="story">
+      <div class="shell story-grid">
+        <div class="story-gallery" aria-label="Arabian Ember kitchen and food">
+          <div class="story-main"><img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85" alt="A colourful plate of freshly prepared food" /></div>
+          <div class="story-side"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=700&q=85" alt="Fresh ingredients for a meal" /></div>
+          <div class="stamp"><span>Generous food. Real warmth.</span></div>
+        </div>
+        <div class="story-copy">
+          <p class="eyebrow">Our kitchen, your gathering place</p>
+          <h2 class="section-title">A little heat.<br />A lot of heart.</h2>
+          <p>Arabian Ember began with one idea: the most memorable food is made slowly, seasoned boldly and served generously. We bring together the street-side energy of Arabia with the comfort of your favourite local spot.</p>
+          <div class="story-points"><div class="story-point"><strong>12+</strong><span>Ember-spiced signatures</span></div><div class="story-point"><strong>Daily</strong><span>Freshly made sauces &amp; sides</span></div></div>
+          <a class="button button-quiet" href="#visit">Come eat with us <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="location" id="visit">
+      <div class="shell location-grid">
+        <div class="location-copy">
+          <p class="eyebrow">Pull up a chair</p>
+          <h2 class="section-title">Find the fire.</h2>
+          <p>Drop in for a quick shawarma, bring the whole table for a platter, or order ahead when the craving strikes.</p>
+          <ul class="details">
+            <li><span>Find us</span><strong>123, Food Street, Phase 1<br />Near City Mall</strong></li>
+            <li><span>Hours</span><strong>Mon–Thu: 6:30 AM – 10:30 PM<br />Fri–Sun: 6:30 AM – 11:30 PM</strong></li>
+            <li><span>Call us</span><strong>+91 99383 88340</strong></li>
+          </ul>
+          <a class="button button-primary" href="tel:+919938388340">Call the kitchen <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="location-card">
+          <div class="location-badge"><div class="small">Tonight’s table is waiting</div><strong>Walk-ins welcome</strong><a href="tel:+919938388340">Call to reserve <span aria-hidden="true">→</span></a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-main">
+        <div class="footer-brand"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span><span class="brand-word">Arabian Ember<small>Street food, made unforgettable</small></span></a><p class="footer-copy">Ember-grilled Arabian street food for anyone who likes their meals full of flavour and shared with good people.</p><div class="socials"><a href="#top" aria-label="Instagram">ig</a><a href="#top" aria-label="Facebook">f</a><a href="#top" aria-label="WhatsApp">wa</a></div></div>
+        <div><p class="footer-heading">Explore</p><div class="footer-links"><a href="#menu">The menu</a><a href="#story">Our story</a><a href="#visit">Visit us</a></div></div>
+        <div><p class="footer-heading">Get in touch</p><div class="footer-links"><a href="tel:+919938388340">+91 99383 88340</a><a href="mailto:hello@arabianember.in">hello@arabianember.in</a><a href="#visit">Food Street, Phase 1</a></div></div>
+      </div>
+      <div class="footer-bar"><span>© 2026 Arabian Ember. All rights reserved.</span><span>Made for good food &amp; better company.</span></div>
+    </div>
+  </footer>
+
+  <div class="overlay" data-close-cart></div>
+  <aside class="cart" aria-label="Your order" aria-live="polite">
+    <div class="drawer-top"><h2>Your order</h2><button class="close" type="button" data-close-cart aria-label="Close order">×</button></div>
+    <div class="cart-items" data-cart-items><div class="empty"><div><span class="empty-icon">◌</span>Your order is waiting for<br />something delicious.</div></div></div>
+    <div class="cart-total"><div><span>Total</span><strong data-cart-total>₹0</strong></div><button class="button button-primary" data-checkout disabled>Continue to WhatsApp <span aria-hidden="true">→</span></button></div>
+  </aside>
+  <div class="toast" role="status" aria-live="polite" data-toast>Added to your order</div>
+
+  <script>
+    const cart = new Map();
+    const formatCurrency = value => `₹${value.toLocaleString('en-IN')}`;
+    const cartCount = document.querySelector('[data-cart-count]');
+    const cartItems = document.querySelector('[data-cart-items]');
+    const cartTotal = document.querySelector('[data-cart-total]');
+    const checkout = document.querySelector('[data-checkout]');
+    const toast = document.querySelector('[data-toast]');
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+    function updateCart() {
+      const items = [...cart.values()];
+      const count = items.reduce((sum, item) => sum + item.quantity, 0);
+      const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      cartCount.textContent = count;
+      cartTotal.textContent = formatCurrency(total);
+      checkout.disabled = !count;
+      if (!items.length) {
+        cartItems.innerHTML = '<div class="empty"><div><span class="empty-icon">◌</span>Your order is waiting for<br />something delicious.</div></div>';
+        return;
+      }
+      cartItems.innerHTML = items.map(item => `
+        <div class="cart-line">
+          <div><strong>${item.name}</strong><span class="line-price">${formatCurrency(item.price)} each</span></div>
+          <strong>${formatCurrency(item.price * item.quantity)}</strong>
+          <div class="line-actions">
+            <div class="quantity" aria-label="Quantity for ${item.name}"><button data-change="-1" data-name="${item.name}" aria-label="Remove one ${item.name}">−</button><span>${item.quantity}</span><button data-change="1" data-name="${item.name}" aria-label="Add one ${item.name}">+</button></div>
+            <button class="remove" data-remove="${item.name}">Remove</button>
+          </div>
+        </div>`).join('');
+    }
+    function addItem(name, price) {
+      const item = cart.get(name) || { name, price, quantity: 0 };
+      item.quantity += 1;
+      cart.set(name, item);
+      updateCart();
+      showToast(`${name} added to your order`);
+    }
+    function closeCart() { document.body.classList.remove('cart-open'); }
+
+    document.querySelectorAll('[data-item]').forEach(button => button.addEventListener('click', () => addItem(button.dataset.item, Number(button.dataset.price))));
+    document.querySelectorAll('[data-open-cart]').forEach(button => button.addEventListener('click', () => document.body.classList.add('cart-open')));
+    document.querySelectorAll('[data-close-cart]').forEach(button => button.addEventListener('click', closeCart));
+    cartItems.addEventListener('click', event => {
+      const name = event.target.dataset.name || event.target.dataset.remove;
+      if (!name) return;
+      const item = cart.get(name);
+      if (event.target.dataset.remove) { cart.delete(name); }
+      if (event.target.dataset.change && item) {
+        item.quantity += Number(event.target.dataset.change);
+        if (item.quantity < 1) cart.delete(name);
+      }
+      updateCart();
+    });
+    checkout.addEventListener('click', () => showToast('Checkout hand-off is ready for your WhatsApp flow.'));
+    document.querySelectorAll('.filter').forEach(filter => filter.addEventListener('click', () => {
+      document.querySelectorAll('.filter').forEach(item => item.classList.remove('active'));
+      filter.classList.add('active');
+      document.querySelectorAll('.food-card').forEach(card => card.classList.toggle('hidden', filter.dataset.filter !== 'all' && card.dataset.category !== filter.dataset.filter));
+    }));
+    document.querySelector('[data-open-menu]').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('mobile-visible');
+      showToast('Use the menu links above to explore the new experience.');
+    });
+  </script>
+</body>
+</html>
